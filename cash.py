@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from pprint import pprint as pp
 
 a = {"year":2019, "month":8, "balance":600000}
@@ -44,14 +45,15 @@ planB.append({'year':2019, 'month':12, 'expence':70000*4, 'item':'life'})
 print(r"result B: ", result_balance(current_balance, planB))
 
 def output_result(plan):
+    '''CSV形式でプランを出力'''
     def get_culumn_names(plan):
         date_keys = list(set([i['month'] for i in plan]))
         item_keys = list(set([ i['item'] for i in plan]))
         return (date_keys, item_keys)
 
-    def val(plan, i,m):
+    def val(plan, item, month):
         for p in plan:
-            if p['item'] == i and p['month'] == m:
+            if p['item'] == item and p['month'] == month:
                 if 'income' in p:
                     return p['income']
                 elif 'expence' in p:
