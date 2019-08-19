@@ -47,22 +47,19 @@ print(r"result B: ", result_balance(current_balance, planB))
 def output_result(plan):
     '''CSV形式でプランを出力'''
     def get_culumn_names(plan):
+        ''''ヘッダ・項目名の作成'''
         date_keys = list(set([i['month'] for i in plan]))
         item_keys = list(set([ i['item'] for i in plan]))
         return (date_keys, item_keys)
 
     def val(plan, item, month):
-        for p in plan:
-            if p['item'] == item and p['month'] == month:
-                if 'income' in p:
-                    return p['income']
-                elif 'expence' in p:
-                    return p['expence'] * (-1)
-        return 0
+        '''同年同月で項目の額をまとめる'''
+        count_plan = [ p for p in plan if p['item'] == item and p['month'] == month]
+        value = sum([ p['income'] if 'income' in p else p['expence'] * (-1) if 'expence' in p  else 0  in p for p in count_plan])
+        return value
 
-    header, row = get_culumn_names(plan)
+    header, row = get_culumn_names(plan) 
     result = [['row'] + header] + [[r] + [val(plan, r, m)  for m in header] for r in row]
-
     return result
 
 pp(output_result(planA))
