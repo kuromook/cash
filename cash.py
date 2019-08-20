@@ -33,27 +33,27 @@ print(r"result current: ", current_balance)
 planA = []
 planA.append({'year':2019, 'month':9, 'income':100000, 'item':'personal'})
 planA.append({'year':2019, 'month':9, 'income':200000, 'item':'publisher'})
-planA.append({'year':2019, 'month':12, 'income':200000, 'item':'publisher'})
-planA.append({'year':2019, 'month':12, 'income':100000, 'item':'personal'})
+planA.append({'year':2019, 'month':(11,12), 'income':200000, 'item':'publisher'})
+planA.append({'year':2019, 'month':(11,12), 'income':100000, 'item':'personal'})
 planA.append({'year':2019, 'month':10, 'income':150000, 'item':'personal'})
-planA.append({'year':2019, 'month':12, 'income':80000, 'item':'dojin'})
+planA.append({'year':2019, 'month':(11,12), 'income':80000, 'item':'dojin'})
 planA.append({'year':2019, 'month':10, 'expence':60000, 'item':'print'})
-planA.append({'year':2019, 'month':12, 'expence':160000, 'item':'misc'})
-planA.append({'year':2019, 'month':12, 'expence':77600*4, 'item':'land'})
-planA.append({'year':2019, 'month':12, 'expence':70000*4, 'item':'life'})
+planA.append({'year':2019, 'month':(11,12), 'expence':160000, 'item':'misc'})
+planA.append({'year':2019, 'month':(11,12), 'expence':77600*4, 'item':'land'})
+planA.append({'year':2019, 'month':(11,12), 'expence':70000*4, 'item':'life'})
 
 print(r"result A: ", result_balance(current_balance, planA))
 
 planB = []
 planB.append({'year':2019, 'month':9, 'income':100000, 'item':'personal'})
 planB.append({'year':2019, 'month':9, 'income':200000, 'item':'publisher'})
-planB.append({'year':2019, 'month':12, 'income':300000, 'item':'personal'})
+planB.append({'year':2019, 'month':(11,12), 'income':300000, 'item':'personal'})
 planB.append({'year':2019, 'month':10, 'income':150000, 'item':'personal'})
-planB.append({'year':2019, 'month':12, 'income':80000, 'item':'dojin'})
+planB.append({'year':2019, 'month':(11,12), 'income':80000, 'item':'dojin'})
 planB.append({'year':2019, 'month':10, 'expence':60000, 'item':'print'})
-planB.append({'year':2019, 'month':12, 'expence':160000, 'item':'misc'})
-planB.append({'year':2019, 'month':12, 'expence':77600*4, 'item':'land'})
-planB.append({'year':2019, 'month':12, 'expence':70000*4, 'item':'life'})
+planB.append({'year':2019, 'month':(11,12), 'expence':160000, 'item':'misc'})
+planB.append({'year':2019, 'month':(11,12), 'expence':77600*4, 'item':'land'})
+planB.append({'year':2019, 'month':(11,12), 'expence':70000*4, 'item':'life'})
 
 print(r"result B: ", result_balance(current_balance, planB))
 
@@ -62,6 +62,7 @@ def output_result(plan, level=1):
     def get_culumn_names(plan):
         ''''ヘッダ・項目名の作成'''
         date_keys = list(set([i['month'] for i in plan]))
+        date_keys.sort()
         item_keys = list(set([ i['item'] for i in plan]))
         return (date_keys, item_keys)
 
@@ -70,8 +71,14 @@ def output_result(plan, level=1):
         count_plan = [ p for p in plan if p['item'] == item and p['month'] == month]
         value = sum([ p['income'] if 'income' in p else p['expence'] * (-1) if 'expence' in p  else 0  in p for p in count_plan])
         return value
+    
+    for p in plan:
+        if isinstance(p["month"], int): 
+            p["month"] = (p["month"],)
+
     if level==1:
         mlist = list(set([(p['year'],  p['month']) for p in plan]))
+        mlist.sort()
         d = {}
         newplan = []
         for m in mlist:
