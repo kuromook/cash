@@ -22,7 +22,7 @@ div = {
 'land':{'level':2, 'parent':'cost'},
 'life':{'level':2, 'parent':'cost'},
 'publisher':{'level':2, 'parent':'sales'}, 
-'personal':{'level':2, 'parent':'cost'},
+'personal':{'level':2, 'parent':'sales'},
 'dojin':{'level':2, 'parent':'sales'},
 'print':{'level':2, 'parent':'cost'} 
 }
@@ -57,7 +57,7 @@ planB.append({'year':2019, 'month':12, 'expence':70000*4, 'item':'life'})
 
 print(r"result B: ", result_balance(current_balance, planB))
 
-def output_result(plan):
+def output_result(plan, level=1):
     '''CSV形式でプランを出力'''
     def get_culumn_names(plan):
         ''''ヘッダ・項目名の作成'''
@@ -70,10 +70,22 @@ def output_result(plan):
         count_plan = [ p for p in plan if p['item'] == item and p['month'] == month]
         value = sum([ p['income'] if 'income' in p else p['expence'] * (-1) if 'expence' in p  else 0  in p for p in count_plan])
         return value
+    if level==1:
+        mlist = list(set([(p['year'],  p['month']) for p in plan]))
+        d = {}
+        newplan = []
+        for m in mlist:
+            d[m] = [p for p in plan if m[0] == p['year'] and m[1] == p['month']]
+        for m in mlist:
+            p_cost = [p['expence'] for p in d[m] if div[p['item']]['parent'] == 'cost']
+            newplan.append({'year':m[0], 'month':m[1], 'item':'cost', 'expence':sum(p_cost)})
+            p_sales = [p['income'] for p in d[m] if div[p['item']]['parent'] == 'sales']
+            newplan.append({'year':m[0],'month':m[1], 'item':'sales', 'income':sum(p_sales)})
+        plan = newplan
 
     header, row = get_culumn_names(plan) 
     result = [['row'] + header] + [[r] + [val(plan, r, m)  for m in header] for r in row]
     return result
 
-pp(output_result(planA))
-pp(output_result(planB))
+pp(output_result(planA,2))
+pp(output_result(planB,2))
