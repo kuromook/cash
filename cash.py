@@ -67,14 +67,13 @@ def output_result(plan, level=1):
         return (date_keys, item_keys)
 
     def val(plan, item, month):
-        '''同年同月で項目の額をまとめる'''
-        count_plan = [ p for p in plan if p['item'] == item and p['month'] == month]
-        value = sum([ p['income'] if 'income' in p else p['expence'] * (-1) if 'expence' in p  else 0  in p for p in count_plan])
+        '''同年同月同項目の額をまとめる'''
+        matched_plan = [ p for p in plan if p['item'] == item and p['month'] == month]
+        value = sum([ p['income'] if 'income' in p else p['expence'] * (-1) if 'expence' in p  else 0  in p for p in matched_plan])
         return value
     
-    for p in plan:
-        if isinstance(p["month"], int): 
-            p["month"] = (p["month"],)
+    # 月の表現を tuple で統一化
+    for p in plan: p["month"] = (p["month"],) if isinstance(p["month"], int) else p["month"] 
 
     if level==1:
         mlist = list(set([(p['year'],  p['month']) for p in plan]))
