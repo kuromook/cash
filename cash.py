@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from pprint import pprint as pp
 import yaml
+from itertools import chain
 
 level = 2
 input_file = 'test.yaml'
@@ -33,6 +34,7 @@ def output_result(plan, level=1):
     '''CSV形式でプランを出力'''
     def get_culumn_names(plan):
         ''''ヘッダ・項目名の作成'''
+
         date_keys = list(set([i['month'] for i in plan]))
         date_keys.sort()
         item_keys = list(set([ i['item'] for i in plan]))
@@ -43,6 +45,13 @@ def output_result(plan, level=1):
         matched_plan = [ p for p in plan if p['item'] == item and p['month'] == month]
         value = sum([ p['amount'] if p['class'] == 'income' else p['amount'] * (-1) if p['class'] == 'expence' else 0  in p for p in matched_plan])
         return value
+    def merge(*dict_args):
+        amount = 0
+        for d in dict_args:
+            amount+= d['amount']
+
+        dict_args[0]['amount'] = amount
+        return dict_args[0]
     
     # 月の表現を tuple で統一化
     for p in plan: p["month"] = (p["month"],) if isinstance(p["month"], int) else p["month"] 
@@ -62,6 +71,15 @@ def output_result(plan, level=1):
             newplan.append({'year':m[0],'month':m[1], 'item':'sales', 'class':'income','amount':sum(p_sales)})
         plan = newplan
 
+    if level==2:
+        for m in mlist:
+            for k,v in group.items():
+                ab = [p for p in dic[m] if p['item'] in v]
+                if len(ab) > 0:
+                    merge_ab = merge(*ab)
+                    dic[m].append({'yaer':merge_ab['year'], 'month':merge_ab['month'], 'item':k, 'class': merge_ab['class'], 'amount':merge_ab['amount']})
+                    dic[m] = [p for p in dic[m] if not p['item'] in v]
+        plan = list(chain.from_iterable(dic.values()))
     header, row = get_culumn_names(plan) 
     result = [['row'] + header] + [[r] + [val(plan, r, m)  for m in header] for r in row]
     return result
