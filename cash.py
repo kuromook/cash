@@ -1,61 +1,31 @@
 # -*- coding: utf-8 -*-
 from pprint import pprint as pp
+import yaml
 
-a = {"year":2019, "month":8, "balance":600000}
+level = 2
+input_file = 'test.yaml'
 
-current = []
-current.append({'year':2019, 'month':8, 'expence':40000, 'item':'misc'})
-current.append({'year':2019, 'month':8, 'expence':77600, 'item':'land'})
-current.append({'year':2019, 'month':8, 'expence':70000, 'item':'life'})
-current.append({'year':2019, 'month':8, 'income':200000, 'item':'publisher'})
+
+with open(input_file) as f: obj = yaml.load(f, Loader=yaml.SafeLoader)
+
+div = obj['div']
+start = obj['start']
+current = obj['current']
+planA = obj['planA']
+planB = obj['planB']
+
+for a in current: a['amount'] = eval(a['amount']) if   isinstance(a['amount'], str) else a['amount']
+for a in planA: a['amount'] = eval(a['amount']) if   isinstance(a['amount'], str) else a['amount']
+for a in planB: a['amount'] = eval(a['amount']) if   isinstance(a['amount'], str) else a['amount']
+
+for a in current: a['month'] = eval(a['month']) if   isinstance(a['month'], str) else a['month']
+for a in planA: a['month'] = eval(a['month']) if   isinstance(a['month'], str) else a['month']
+for a in planB: a['month'] = eval(a['month']) if   isinstance(a['month'], str) else a['month']
 
 def result_balance(balance, plan):
     '''planを適用し、将来の結果を取得'''
-    result = balance - sum([i['expence'] for i in plan if 'expence' in i])+ sum([i['income'] for i in plan if 'income' in i])
+    result = balance - sum([i['amount'] for i in plan if i['class'] == 'expence'])+ sum([i['amount'] for i in plan if i['class'] == 'income'])
     return result 
-
-div = {
-'recievable':{'level':1, 'parent':None} , 
-'sales':{'level':1, 'parent':None},
-'cost':{'level':1, 'parent':None}, 
-'misc':{'level':2, 'parent':'cost'},
-'land':{'level':2, 'parent':'cost'},
-'life':{'level':2, 'parent':'cost'},
-'publisher':{'level':2, 'parent':'sales'}, 
-'personal':{'level':2, 'parent':'sales'},
-'dojin':{'level':2, 'parent':'sales'},
-'print':{'level':2, 'parent':'cost'} 
-}
-
-current_balance = result_balance(a['balance'], current)
-print(r"result current: ", current_balance)
-
-planA = []
-planA.append({'year':2019, 'month':9, 'income':100000, 'item':'personal'})
-planA.append({'year':2019, 'month':9, 'income':200000, 'item':'publisher'})
-planA.append({'year':2019, 'month':(11,12), 'income':200000, 'item':'publisher'})
-planA.append({'year':2019, 'month':(11,12), 'income':100000, 'item':'personal'})
-planA.append({'year':2019, 'month':10, 'income':150000, 'item':'personal'})
-planA.append({'year':2019, 'month':(11,12), 'income':80000, 'item':'dojin'})
-planA.append({'year':2019, 'month':10, 'expence':60000, 'item':'print'})
-planA.append({'year':2019, 'month':(11,12), 'expence':160000, 'item':'misc'})
-planA.append({'year':2019, 'month':(11,12), 'expence':77600*4, 'item':'land'})
-planA.append({'year':2019, 'month':(11,12), 'expence':70000*4, 'item':'life'})
-
-print(r"result A: ", result_balance(current_balance, planA))
-
-planB = []
-planB.append({'year':2019, 'month':9, 'income':100000, 'item':'personal'})
-planB.append({'year':2019, 'month':9, 'income':200000, 'item':'publisher'})
-planB.append({'year':2019, 'month':(11,12), 'income':300000, 'item':'personal'})
-planB.append({'year':2019, 'month':10, 'income':150000, 'item':'personal'})
-planB.append({'year':2019, 'month':(11,12), 'income':80000, 'item':'dojin'})
-planB.append({'year':2019, 'month':10, 'expence':60000, 'item':'print'})
-planB.append({'year':2019, 'month':(11,12), 'expence':160000, 'item':'misc'})
-planB.append({'year':2019, 'month':(11,12), 'expence':77600*4, 'item':'land'})
-planB.append({'year':2019, 'month':(11,12), 'expence':70000*4, 'item':'life'})
-
-print(r"result B: ", result_balance(current_balance, planB))
 
 def output_result(plan, level=1):
     '''CSV形式でプランを出力'''
@@ -69,7 +39,7 @@ def output_result(plan, level=1):
     def val(plan, item, month):
         '''同年同月同項目の額をまとめる'''
         matched_plan = [ p for p in plan if p['item'] == item and p['month'] == month]
-        value = sum([ p['income'] if 'income' in p else p['expence'] * (-1) if 'expence' in p  else 0  in p for p in matched_plan])
+        value = sum([ p['amount'] if p['class'] == 'income' else p['amount'] * (-1) if p['class'] == 'expence' else 0  in p for p in matched_plan])
         return value
     
     # 月の表現を tuple で統一化
@@ -83,15 +53,20 @@ def output_result(plan, level=1):
         for m in mlist:
             d[m] = [p for p in plan if m[0] == p['year'] and m[1] == p['month']]
         for m in mlist:
-            p_cost = [p['expence'] for p in d[m] if div[p['item']]['parent'] == 'cost']
-            newplan.append({'year':m[0], 'month':m[1], 'item':'cost', 'expence':sum(p_cost)})
-            p_sales = [p['income'] for p in d[m] if div[p['item']]['parent'] == 'sales']
-            newplan.append({'year':m[0],'month':m[1], 'item':'sales', 'income':sum(p_sales)})
+            p_cost = [p['amount'] for p in d[m] if div[p['item']]['parent'] == 'cost']
+            newplan.append({'year':m[0], 'month':m[1], 'item':'cost', 'class': 'expence', 'amount':sum(p_cost)})
+            p_sales = [p['amount'] for p in d[m] if div[p['item']]['parent'] == 'sales']
+            newplan.append({'year':m[0],'month':m[1], 'item':'sales', 'class':'income','amount':sum(p_sales)})
         plan = newplan
 
     header, row = get_culumn_names(plan) 
     result = [['row'] + header] + [[r] + [val(plan, r, m)  for m in header] for r in row]
     return result
 
-pp(output_result(planA,2))
-pp(output_result(planB,2))
+current_balance = result_balance(start['balance'], current)
+print(r"result current: ", current_balance)
+print(r"result A: ", result_balance(current_balance, planA))
+print(r"result B: ", result_balance(current_balance, planB))
+
+pp(output_result(planA,level))
+pp(output_result(planB,level))

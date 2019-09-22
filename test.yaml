@@ -1,0 +1,158 @@
+div:
+  recievable:
+    level: 1
+    parent: null
+  sales:
+    level: 1
+    parent: null
+  cost: 
+    level: 1
+    parent: null 
+  misc:
+    level: 2
+    parent: 'cost'
+  land:
+    level: 2
+    parent: 'cost'
+  life: 
+    level: 2
+    parent: 'cost'
+  publisher:
+    level: 2
+    parent: 'sales' 
+  personal:
+    level: 2
+    parent: 'sales'
+  dojin:
+    level: 2
+    parent: 'sales'
+  print:
+    level: 2
+    parent: 'cost' 
+
+start:
+  year: 2019
+  month": 8
+  balance: 600000
+
+current:
+  - year: 2019
+    month: 8
+    class: expence
+    amount: 40000
+    item: 'misc'
+  - year: 2019
+    month: 8
+    class: expence
+    amount: 77600
+    item: 'land'
+  - year: 2019
+    month: 8
+    class: expence
+    amount: 70000
+    item: 'life'
+  - year: 2019
+    month: 8
+    class: income
+    amount: 200000
+    item: 'publisher'
+
+planA:
+  - year: 2019
+    month: 9
+    class: income
+    amount: 100000
+    item: 'personal'
+  - year: 2019
+    month: 9
+    class: income
+    amount: 200000
+    item: 'publisher'
+  - year: 2019
+    month: (11,12)
+    class: income
+    amount: 200000
+    item: 'publisher'
+  - year: 2019
+    month: (11,12)
+    class: income
+    amount: 100000
+    item: 'personal'
+  - year: 2019
+    month: 10
+    class: income
+    amount: 150000
+    item: 'personal'
+  - year: 2019
+    month: (11,12)
+    class: income
+    amount: 80000
+    item: 'dojin'
+  - year: 2019
+    month: 10
+    class: expence
+    amount: 60000
+    item: 'print'
+  - year: 2019
+    month: (11,12)
+    class: expence
+    amount: 160000
+    item: 'misc'
+  - year: 2019
+    month: (11,12)
+    class: expence
+    amount: 77600*4
+    item: 'land'
+  - year: 2019
+    month: (11,12)
+    class: expence
+    amount: 70000*4
+    item: 'life'
+
+planB:
+  - year: 2019
+    month: 9
+    class: income
+    amount: 100000
+    item: 'personal'
+  - year: 2019
+    month: 9
+    class: income
+    amount: 200000
+    item: 'publisher'
+  - year: 2019
+    month: (11,12)
+    class: income
+    amount: 300000
+    item: 'personal'
+  - year: 2019
+    month: 10
+    class: income
+    amount: 150000
+    item: 'personal'
+  - year: 2019
+    month: (11,12)
+    class: income
+    amount: 80000
+    item: 'dojin'
+  - year: 2019
+    month: 10
+    class: expence
+    amount: 60000
+    item: 'print'
+  - year: 2019
+    month: (11,12)
+    class: expence
+    amount: 160000
+    item: 'misc'
+  - year: 2019
+    month: (11,12)
+    class: expence
+    amount: 77600*4
+    item: 'land'
+  - year: 2019
+    month: (11,12)
+    class: expence
+    amount: 70000*4
+    item: 'life'
+
